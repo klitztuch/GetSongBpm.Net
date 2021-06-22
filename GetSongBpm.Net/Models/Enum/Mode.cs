@@ -2,6 +2,7 @@
 {
     public enum Mode
     {
-        
+        Minor,
+        Major
     }
 }

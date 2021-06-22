@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace GetSongBpm.Net.Models.TempoModels
+namespace GetSongBpm.Net.Models
 {
     public class Artist
     {

@@ -2,6 +2,7 @@
 {
     public enum Notation
     {
-        
+        Flat,
+        Sharp
     }
 }
