@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Web;
@@ -21,7 +22,13 @@ namespace GetSongBpm.Net
         {
             _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
             _baseUrl = baseUrl ?? BASE_URL;
-            _httpClient = new HttpClient();
+            _httpClient = new HttpClient()
+            {
+                DefaultRequestHeaders =
+                {
+                    {"User-Agent", "GetSongBpm.Net"}
+                }
+            };
         }
 
         /// <summary>
@@ -31,12 +38,16 @@ namespace GetSongBpm.Net
         /// <returns></returns>
         public async Task<Artist> GetArtist(string id)
         {
-            var builder = new UriBuilder(_baseUrl);
+            var builder = new UriBuilder(_baseUrl)
+            {
+                Path = "artist/"
+            };
             var query = HttpUtility.ParseQueryString(builder.Query);
             query["api_key"] = _apiKey;
             query["id"] = id;
             builder.Query = query.ToString() ?? string.Empty;
             var response = await _httpClient.GetAsync(builder.ToString());
+            var s = await response.Content.ReadAsStringAsync();
             var artistResponse = await response.Content.ReadFromJsonAsync<ArtistResponse>();
             return artistResponse?.Artist;
         }
@@ -48,7 +59,10 @@ namespace GetSongBpm.Net
         /// <returns></returns>
         public async Task<Song> GetSong(string id)
         {
-            var uriBuilder = new UriBuilder(_baseUrl);
+            var uriBuilder = new UriBuilder(_baseUrl)
+            {
+                Path = "song/"
+            };
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
             query["api_key"] = _apiKey;
             query["id"] = id;
@@ -66,7 +80,10 @@ namespace GetSongBpm.Net
         /// <returns></returns>
         public async Task<List<Tempo>> GetSongsByTempo(string bpm)
         {
-            var uriBuilder = new UriBuilder(_baseUrl);
+            var uriBuilder = new UriBuilder(_baseUrl)
+            {
+                Path = "tempo/"
+            };
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
             query["api_key"] = _apiKey;
             query["bpm"] = bpm;
@@ -88,7 +105,10 @@ namespace GetSongBpm.Net
             Mode mode,
             Notation? notation = null)
         {
-            var uriBuilder = new UriBuilder(_baseUrl);
+            var uriBuilder = new UriBuilder(_baseUrl)
+            {
+                Path = "key/"
+            };
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
             query["api_key"] = _apiKey;
             query["key_of"] = ((int) key).ToString();
@@ -114,7 +134,10 @@ namespace GetSongBpm.Net
         {
             if (song == null && searchType != SearchType.Artist) throw new ArgumentNullException(nameof(song));
             if (artist == null && searchType != SearchType.Song) throw new ArgumentNullException(nameof(artist));
-            var uriBuilder = new UriBuilder(_baseUrl);
+            var uriBuilder = new UriBuilder(_baseUrl)
+            {
+                Path = "search/"
+            };
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
             query["api_key"] = _apiKey;
             query["type"] = searchType.ToString().ToLower();

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
@@ -7,13 +7,14 @@ namespace GetSongBpm.Net.Tests
 {
     public class GetSongBpmTest
     {
-        private IConfiguration Configuration { get; set; }
         private GetSongBpm _getSongBpm;
-        
+        private IConfiguration Configuration { get; set; }
+
         [SetUp]
         public void Setup()
         {
-            var builder = new ConfigurationBuilder().AddUserSecrets<GetSongBpmTest>();
+            var builder = new ConfigurationBuilder().AddUserSecrets<GetSongBpmTest>()
+                .AddEnvironmentVariables();
             Configuration = builder.Build();
             var apiKey = Configuration["TestApiKey"];
             _getSongBpm = new GetSongBpm(apiKey);
@@ -22,9 +23,28 @@ namespace GetSongBpm.Net.Tests
         [Test]
         public async Task GetArtistTest()
         {
-            var artist = await _getSongBpm.GetArtist("1");
+            const string id = "OMrJg";
+            var artist = await _getSongBpm.GetArtist(id);
             Assert.IsNotNull(artist);
-            Assert.Pass();
+            Assert.AreEqual(id, artist.Id);
+        }
+
+        [Test]
+        public async Task GetSongTest()
+        {
+            const string id = "6RNxAQ";
+            var song = await _getSongBpm.GetSong(id);
+            Assert.IsNotNull(song);
+            Assert.AreEqual(id, song.Id);
+        }
+
+        [Test]
+        public async Task GetSongsByTempoTest()
+        {
+            const string bpm = "100";
+            var songsByTempo = await _getSongBpm.GetSongsByTempo(bpm);
+            Assert.IsNotNull(songsByTempo);
+            Assert.IsTrue(songsByTempo.All(o => o.TempoValue == bpm));
         }
     }
 }
