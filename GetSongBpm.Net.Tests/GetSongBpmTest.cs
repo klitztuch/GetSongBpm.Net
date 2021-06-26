@@ -16,7 +16,7 @@ namespace GetSongBpm.Net.Tests
             var builder = new ConfigurationBuilder().AddUserSecrets<GetSongBpmTest>()
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            var apiKey = Configuration["TestApiKey"];
+            var apiKey = Configuration["TESTAPIKEY"];
             _getSongBpm = new GetSongBpm(apiKey);
         }
 
