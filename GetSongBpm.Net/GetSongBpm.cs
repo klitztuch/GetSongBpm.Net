@@ -18,11 +18,12 @@ namespace GetSongBpm.Net
         private readonly HttpClient _httpClient;
 
         public GetSongBpm(string apiKey,
-            string baseUrl = null)
+            string baseUrl = null,
+            HttpClient httpClient = null)
         {
             _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
             _baseUrl = baseUrl ?? BASE_URL;
-            _httpClient = new HttpClient()
+            _httpClient = httpClient ?? new HttpClient()
             {
                 DefaultRequestHeaders =
                 {
@@ -68,6 +69,7 @@ namespace GetSongBpm.Net
             query["id"] = id;
             uriBuilder.Query = query.ToString() ?? string.Empty;
             var response = await _httpClient.GetAsync(uriBuilder.ToString());
+            var s = await response.Content.ReadAsStringAsync();
             var songResponse = await response.Content.ReadFromJsonAsync<SongResponse>();
             return songResponse?.Song;
         }
