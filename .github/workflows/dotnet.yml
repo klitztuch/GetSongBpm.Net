@@ -2,9 +2,11 @@ name: .NET
 
 on:
   push:
-    branches: [ master ]
+    branches:
+    - 'releases/**'
   pull_request:
-    branches: [ master ]
+    branches:
+    - 'releases/**'
 
 jobs:
   build:
@@ -25,3 +27,8 @@ jobs:
       run: dotnet test --no-build --verbosity normal
       env: 
         TESTAPIKEY: ${{secrets.TESTAPIKEY}}
+    
+    - name: Publish
+      run: dotnet nuget push **/GetSongBpm.Net.*.nupkg --api-key $NUGETAPIKEY  --source https://api.nuget.org/v3/index.json
+      env:
+        NUGETAPIKEY: ${{secrets.NUGETAPIKEY}}
